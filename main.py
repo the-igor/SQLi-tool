@@ -29,3 +29,5 @@ diff = ""
 for e in diff_list:
 	diff += e
 
+print(diff)
+
